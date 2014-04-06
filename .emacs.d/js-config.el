@@ -5,7 +5,6 @@
 (require 'js-comint)
 (defun whitespace-clean-and-compile ()
   (interactive)
-  (whitespace-cleanup-all)
   (compile compile-command))
 
 ;; Configure jshint for JS style checking.
@@ -69,7 +68,8 @@
        (replace-regexp-in-string
         "\\[0K" ""
         (replace-regexp-in-string
-         "" "" output))))))))
+         "
+" "" output))))))))
       )
     output
   )
