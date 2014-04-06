@@ -133,18 +133,8 @@ alias cp="cp -i"
 set -o noclobber
 
 # 2.2) Listing, directories, and motion
-alias ll="ls -alrtF --color"
-alias la="ls -A"
-alias l="ls -CF"
-alias dir='ls --color=auto --format=vertical'
-alias vdir='ls --color=auto --format=long'
-alias m='less'
-alias ..='cd ..'
-alias ...='cd ..;cd ..'
-alias md='mkdir'
-alias cl='clear'
-alias du='du -ch --max-depth=1'
-alias treeacl='tree -A -C -L 2'
+alias ls="ls -lah"
+
 
 # 2.3) Text and editor commands
 alias em='emacs -nw'     # No X11 windows
@@ -169,11 +159,6 @@ export LC_ALL=POSIX
 # 2.7) Install rlwrap if not present
 # http://stackoverflow.com/a/677212
 command -v rlwrap >/dev/null 2>&1 || { echo >&2 "Install rlwrap to use node: sudo apt-get install -y rlwrap";}
-
-# 2.8) node.js and nvm
-# http://nodejs.org/api/repl.html#repl_repl
-alias node="env NODE_NO_READLINE=1 rlwrap node"
-alias node_repl="node -e \"require('repl').start({ignoreUndefined: true})\""
 
 ## ------------------------------
 ## -- 3) User-customized code  --
