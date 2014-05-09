@@ -156,10 +156,6 @@ export GREP_COLOR='1;31' # green for matches
 unset LANG
 export LC_ALL=POSIX
 
-# 2.7) Install rlwrap if not present
-# http://stackoverflow.com/a/677212
-command -v rlwrap >/dev/null 2>&1 || { echo >&2 "Install rlwrap to use node: sudo apt-get install -y rlwrap";}
-
 ## ------------------------------
 ## -- 3) User-customized code  --
 ## ------------------------------
