@@ -12,6 +12,10 @@ ln -sb dotfiles/.bashrc .
 ln -sb dotfiles/.bashrc_custom .
 mv .emacs.d .emacs.d~
 ln -s dotfiles/.emacs.d .
+cd dotfiles/.emacs.d
+git clone https://github.com/auto-complete/popup-el.git
+git clone https://github.com/auto-complete/auto-complete.git
+
 ```
 
 See also http://github.com/ivan-loh/setup to install prerequisite
