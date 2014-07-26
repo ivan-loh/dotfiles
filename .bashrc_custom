@@ -1,1 +1,10 @@
+export GOPATH=$HOME/go
+export PATH=$PATH:/usr/local/opt/go/libexec/bin
+export PATH=$PATH:$GOPATH/bin
+export JAVA_HOME=$(/usr/libexec/java_home)
 
+alias tunnel_spr="ssh -L27017:localhost:27017 -L6379:localhost:6379 spr"
+alias tunnel_processing="ssh -L27017:localhost:27017 -L6379:localhost:6379 processing"
+alias tunnel_compute="ssh -L27017:localhost:27017 -L6379:localhost:6379 compute"
+alias httpserver="python -m SimpleHTTPServer 8888";
+alias mongod="ulimit -n 2048 && mongod"

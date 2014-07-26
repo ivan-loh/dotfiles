@@ -91,3 +91,9 @@
 (global-auto-complete-mode t)
 (setq ac-auto-start 2)
 (setq ac-ignore-case nil)
+
+;; -------------
+;; -- go-mode --
+;; -------------
+(add-to-list 'load-path "~/.emacs.d/go")
+(require 'go-mode-load)
