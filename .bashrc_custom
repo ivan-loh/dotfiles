@@ -1,7 +1,13 @@
 export GOPATH=$HOME/go
 export PATH=$PATH:/usr/local/opt/go/libexec/bin
 export PATH=$PATH:$GOPATH/bin
-export JAVA_HOME=$(/usr/libexec/java_home)
+
+_type=$(uname -s)
+# BSD Date
+if [ "$_type" = "Darwin" ]; then
+    export JAVA_HOME=$(/usr/libexec/java_home)
+fi
+
 
 alias tunnel_spr="ssh -L27017:localhost:27017 -L6379:localhost:6379 spr"
 alias tunnel_processing="ssh -L27017:localhost:27017 -L6379:localhost:6379 processing"
