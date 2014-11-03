@@ -6,11 +6,7 @@ _type=$(uname -s)
 # BSD Date
 if [ "$_type" = "Darwin" ]; then
     export JAVA_HOME=$(/usr/libexec/java_home)
+    alias tunnel_compute="ssh -L27017:localhost:27017 -L6379:localhost:6379 compute"
+    alias httpserver="python -m SimpleHTTPServer 8888";
+    alias mongod="ulimit -n 2048 && mongod"
 fi
-
-
-alias tunnel_spr="ssh -L27017:localhost:27017 -L6379:localhost:6379 spr"
-alias tunnel_processing="ssh -L27017:localhost:27017 -L6379:localhost:6379 processing"
-alias tunnel_compute="ssh -L27017:localhost:27017 -L6379:localhost:6379 compute"
-alias httpserver="python -m SimpleHTTPServer 8888";
-alias mongod="ulimit -n 2048 && mongod"
