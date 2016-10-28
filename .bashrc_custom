@@ -1,8 +1,36 @@
 _type=$(uname -s)
-# BSD Date
+
 if [ "$_type" = "Darwin" ]; then
-    export JAVA_HOME=$(/usr/libexec/java_home)
-    alias tunnel_compute="ssh -L27017:localhost:27017 -L6379:localhost:6379 compute"
-    alias httpserver="python -m SimpleHTTPServer 8888";
-    alias mongod="ulimit -n 2048 && mongod"
+
+    # mosh
+    export LANG="en_US.UTF-8"
+    export LC_COLLATE="en_US.UTF-8"
+    export LC_CTYPE="en_US.UTF-8"
+    export LC_MESSAGES="en_US.UTF-8"
+    export LC_MONETARY="en_US.UTF-8"
+    export LC_NUMERIC="en_US.UTF-8"
+    export LC_TIME="en_US.UTF-8"
+    export LC_ALL="en_US.UTF-8"
+    
+    # misc
+    alias openports="sudo lsof -iTCP -sTCP:LISTEN -n -P"
+    alias resetlaunchpad="defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock"
+
 fi
+
+# safety
+alias rm="rm -i"
+alias mv="mv -i"
+alias cp="cp -i"
+alias ls="ls -lah"
+
+# git
+alias gl1="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+alias gl2="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
+
+
+# emacs
+alias e='emacsclient -t'
+alias ec='emacsclient -c'
+alias vim='emacsclient -t'
+alias vi='emacsclient -t'
