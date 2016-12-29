@@ -34,3 +34,8 @@ alias e='emacsclient -t'
 alias ec='emacsclient -c'
 alias vim='emacsclient -t'
 alias vi='emacsclient -t'
+
+
+
+alias docker_clean_images="docker images | grep none | cut -d ' ' -f 33 | xargs docker rmi"
+alias docker_clean_running="docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm"
