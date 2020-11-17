@@ -22,7 +22,7 @@ fi
 alias rm="rm -i"
 alias mv="mv -i"
 alias cp="cp -i"
-alias ls="ls -lah"
+alias ls="ls -lah --color=auto"
 
 # git
 alias gl1="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
