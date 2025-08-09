@@ -2,9 +2,12 @@
 
 [[ -f "$HOME/.shellrc" ]] && source "$HOME/.shellrc"
 
-shopt -s histappend checkwinsize
-bind "set completion-ignore-case on"
-[[ -f /etc/bash_completion ]] && source /etc/bash_completion
+# Only set shell options and bindings in interactive shells
+if [[ $- == *i* ]]; then
+    shopt -s histappend checkwinsize
+    bind "set completion-ignore-case on" 2>/dev/null
+    [[ -f /etc/bash_completion ]] && source /etc/bash_completion
+fi
 
 parse_git_branch() {
     git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
