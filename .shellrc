@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+# Unified shell config for bash/zsh on macOS/Ubuntu
+
+# Detect OS
+export OS_TYPE="linux"
+[[ "$(uname)" == "Darwin" ]] && export OS_TYPE="macos"
+
+# Detect shell
+export SHELL_TYPE="unknown"
+[[ -n "$BASH_VERSION" ]] && export SHELL_TYPE="bash"
+[[ -n "$ZSH_VERSION" ]] && export SHELL_TYPE="zsh"
+
+# UTF-8 (mosh compatibility)
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# PATH
+export PATH="/usr/local/sbin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+
+# Umask
+[[ "$(id -gn)" == "$(id -un)" ]] && umask 002 || umask 022
+
+# Editor
+export EDITOR="${EDITOR:-vi}"
+export VISUAL="$EDITOR"
+
+# History
+export HISTSIZE=10000
+export HISTFILE="$HOME/.shell_history"
+[[ "$SHELL_TYPE" == "bash" ]] && {
+    export HISTFILESIZE=10000
+    export HISTCONTROL=ignoreboth:erasedups
+    export HISTIGNORE="ls:ll:cd:pwd:exit:date"
+    export HISTTIMEFORMAT="%F %T "
+}
+[[ "$SHELL_TYPE" == "zsh" ]] && {
+    export SAVEHIST=10000
+    setopt HIST_IGNORE_DUPS 2>/dev/null
+    setopt HIST_IGNORE_SPACE 2>/dev/null
+    setopt SHARE_HISTORY 2>/dev/null
+}
+
+# Aliases
+alias rm='rm -i'
+alias mv='mv -i'
+alias cp='cp -i'
+alias grep='grep --color=auto'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+[[ "$OS_TYPE" == "macos" ]] && {
+    alias ls='ls -lahG'
+    alias ll='ls -lahG'
+    alias openports="sudo lsof -iTCP -sTCP:LISTEN -n -P"
+    alias flushdns="sudo dscacheutil -flushcache"
+} || {
+    alias ls='ls -lah --color=auto'
+    alias ll='ls -lah --color=auto'
+    alias openports="sudo netstat -tulpn | grep LISTEN"
+}
+
+# Git
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gpl='git pull'
+alias gd='git diff'
+alias gl='git log --oneline --graph --decorate --all'
+
+# Docker
+command -v docker &>/dev/null && {
+    alias dps='docker ps'
+    alias dpsa='docker ps -a'
+    alias di='docker images'
+    alias dex='docker exec -it'
+    alias dl='docker logs'
+    alias dlf='docker logs -f'
+}
+
+# Functions
+filesearch() {
+    local pattern="${1:?Usage: filesearch PATTERN [PATH]}"
+    local search_path="${2:-.}"
+    grep -rnw "$search_path" -e "$pattern" 2>/dev/null
+}
+
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+extract() {
+    [[ ! -f "$1" ]] && { echo "File not found: $1"; return 1; }
+    case "$1" in
+        *.tar.bz2) tar xjf "$1" ;;
+        *.tar.gz)  tar xzf "$1" ;;
+        *.tar.xz)  tar xJf "$1" ;;
+        *.bz2)     bunzip2 "$1" ;;
+        *.gz)      gunzip "$1" ;;
+        *.tar)     tar xf "$1" ;;
+        *.zip)     unzip "$1" ;;
+        *.7z)      7z x "$1" ;;
+        *)         echo "Unknown archive format: $1" ;;
+    esac
+}
+
+docker_cleanup() {
+    echo "Cleaning Docker..."
+    docker container prune -f
+    docker image prune -f
+    docker volume prune -f
+    docker network prune -f
+}
+
+# AWS Dev Instance
+export DEV_ID="${DEV_ID:-}"
+export AWS_KEY_PATH="${AWS_KEY_PATH:-$HOME/.ssh/eriad-main.pem}"
+
+aws_cli() {
+    if command -v aws &>/dev/null; then
+        aws "$@"
+    elif command -v docker &>/dev/null; then
+        docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli "$@"
+    else
+        echo "Error: Neither AWS CLI nor Docker available"
+        return 1
+    fi
+}
+
+dev_stop() {
+    [[ -z "$DEV_ID" ]] && { echo "Error: DEV_ID not set"; return 1; }
+    aws_cli ec2 stop-instances --instance-ids "$DEV_ID"
+}
+
+dev_start() {
+    [[ -z "$DEV_ID" ]] && { echo "Error: DEV_ID not set"; return 1; }
+    aws_cli ec2 start-instances --instance-ids "$DEV_ID"
+}
+
+dev_state() {
+    [[ -z "$DEV_ID" ]] && { echo "Error: DEV_ID not set"; return 1; }
+    aws_cli ec2 describe-instances \
+        --filters "Name=instance-id,Values=$DEV_ID" \
+        --query "Reservations[].Instances[].State[].Name" \
+        --output text
+}
+
+dev_getip() {
+    [[ -z "$DEV_ID" ]] && { echo "Error: DEV_ID not set"; return 1; }
+    aws_cli ec2 describe-instances \
+        --filters "Name=instance-id,Values=$DEV_ID" \
+        --query "Reservations[].Instances[].NetworkInterfaces[].Association[].PublicIp" \
+        --output text
+}
+
+dev_console() {
+    [[ -z "$DEV_ID" ]] && { echo "Error: DEV_ID not set"; return 1; }
+    [[ ! -f "$AWS_KEY_PATH" ]] && { echo "Error: SSH key not found"; return 1; }
+    local ip=$(dev_getip)
+    [[ -z "$ip" ]] && { echo "Error: Could not get IP"; return 1; }
+    ssh "ubuntu@$ip" -i "$AWS_KEY_PATH" -o "StrictHostKeyChecking no"
+}
+
+# Homebrew (macOS)
+[[ "$OS_TYPE" == "macos" ]] && {
+    [[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+    [[ -f /usr/local/bin/brew ]] && eval "$(/usr/local/bin/brew shellenv)"
+}
+
+# Local overrides
+[[ -f "$HOME/.shellrc_local" ]] && source "$HOME/.shellrc_local"

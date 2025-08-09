@@ -1,48 +1,123 @@
-dotfiles.git
-============
-Clone and run this on a new EC2 instance running Ubuntu 12.04.2 LTS to
-configure your `bash` and `emacs` development environment as follows:
+# dotfiles
 
-```sh
-cd $HOME
-git clone https://github.com/ivan-loh/dotfiles.git
-ln -sb dotfiles/.screenrc .
-ln -sb dotfiles/.bash_profile .
-ln -sb dotfiles/.bashrc .
-ln -sb dotfiles/.bashrc_custom .
-mv .emacs.d .emacs.d~
-ln -s dotfiles/.emacs.d .
-cd dotfiles/.emacs.d
-git clone https://github.com/auto-complete/popup-el.git
-git clone https://github.com/auto-complete/auto-complete.git
+Minimal shell configuration for macOS and Ubuntu. No bullshit.
 
+## Install
+
+```bash
+git clone https://github.com/ivan-loh/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./install.sh
 ```
 
-See also http://github.com/ivan-loh/setup to install prerequisite
-programs. If all goes well, in addition to a more useful prompt, now you can
-do `emacs -nw hello.js` and hitting `C-c!` to launch an interactive SSJS
-REPL.
+## Architecture
 
-
-
-#### Automated Shutdown
-
-###### crontab
 ```
-*/10 * * * *	/root/scripts/shutdown-check.sh
+.shellrc    # Core config (171 lines)
+.bashrc     # Bash wrapper (12 lines)  
+.zshrc      # Zsh wrapper (9 lines)
 ```
 
-###### shutdown-check.sh
+One main file. Two tiny wrappers. That's it.
 
-```sh
-#!/bin/bash
+## Commands
 
-sleep 300
-
-u=`users`;
-l=${#u};
-if [ $l -lt 2 ]
-then
-	/usr/sbin/shutdown -h 5
-fi
+### Navigation
+```bash
+..          # cd ..
+...         # cd ../..
+....        # cd ../../..
 ```
+
+### Git
+```bash
+gs          # git status
+ga          # git add
+gc          # git commit
+gp          # git push
+gpl         # git pull
+gd          # git diff
+gl          # git log --oneline --graph --decorate --all
+```
+
+### Docker
+```bash
+dps         # docker ps
+dpsa        # docker ps -a
+di          # docker images
+dex         # docker exec -it
+dl          # docker logs
+dlf         # docker logs -f
+```
+
+### AWS
+```bash
+dev_start   # start EC2 instance
+dev_stop    # stop EC2 instance
+dev_state   # check status
+dev_getip   # get public IP
+dev_console # SSH into instance
+```
+
+### Functions
+```bash
+filesearch PATTERN [PATH]    # grep -rnw
+mkcd DIR                     # mkdir && cd
+extract FILE                 # handles tar.gz, zip, etc
+docker_cleanup               # prune everything
+```
+
+### Screen
+
+Prefix: `Ctrl-t`
+
+```
+u/j         # prev/next window
+s/S         # split horizontal/vertical
++/-/_       # resize
+x           # kill window
+r           # reload config
+,           # rename window
+```
+
+## Local Config
+
+Machine-specific settings go in `~/.shellrc_local`:
+
+```bash
+export DEV_ID="i-1234567890abcdef0"
+export AWS_KEY_PATH="$HOME/.ssh/key.pem"
+export EDITOR="vim"
+```
+
+## Structure
+
+```
+~/dotfiles/
+├── .shellrc        # everything
+├── .bashrc         # sources .shellrc + prompt
+├── .zshrc          # sources .shellrc + prompt
+├── .screenrc       # GNU screen config
+├── install.sh      # symlinks everything
+└── uninstall.sh    # removes symlinks
+```
+
+## Compatibility
+
+- macOS 10.15+ (zsh default)
+- macOS with bash 3.2
+- Ubuntu 18.04+ (bash 4+)
+- Ubuntu with zsh
+
+## Uninstall
+
+```bash
+cd ~/dotfiles
+./uninstall.sh
+```
+
+Restores backups if available.
+
+## License
+
+MIT

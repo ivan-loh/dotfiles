@@ -1,0 +1,17 @@
+*.backup
+*.backup.*
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.bash_eternal_history
+.bash_history
+.bash_history.d/
+.bashrc_local
+.env
+.vscode/
+.idea/
+*.iml
+*.tmp
+*.temp
